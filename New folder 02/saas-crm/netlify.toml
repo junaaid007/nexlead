@@ -1,0 +1,20 @@
+# NexLead CRM - Netlify Configuration
+# Created by Junaid Mansoor
+
+[build]
+  base = "frontend"
+  publish = "dist"
+  command = "npm install && npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"

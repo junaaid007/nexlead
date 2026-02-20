@@ -1,0 +1,61 @@
+# NexLead CRM Deployment Configuration
+# Created by Junaid Mansoor
+# Deploy to Render.com
+
+services:
+  # Backend API
+  - type: web
+    name: nexlead-crm-api
+    runtime: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        fromDatabase:
+          name: novaflow-crm-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: novaflow-crm-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: novaflow-crm-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: novaflow-crm-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: novaflow-crm-db
+          property: password
+      - key: FRONTEND_URL
+        fromService:
+          type: static
+          name: novaflow-crm-web
+          property: url
+
+  # Frontend Static Site
+  - type: static
+    name: nexlead-crm-web
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: novaflow-crm-api
+          property: url
+        value: /api
+
+databases:
+  - name: nexlead-crm-db
+    plan: free
+    postgresMajorVersion: 15
